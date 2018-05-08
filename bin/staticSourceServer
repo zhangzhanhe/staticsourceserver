@@ -1,0 +1,46 @@
+#!/usr/bin/env node
+const http = require('http');
+const fs = require('fs');
+const child_process = require('child_process');
+const path = require("path");
+const mime = require('mime-types');
+const port = process.argv[2] || 8080;
+let currentPath = path.resolve('./');
+let defaultContentType = 'text/plain;charset=utf-8'; //默认的Content-Type
+http.createServer(function (request, response){
+	//判断,若是url为目录,则列出目录下的文件,若是为文件,则直接读取文件内容展示
+	let urlPath = decodeURIComponent(request.url).split("?")[0].replace(/\/+$/,'') || '';
+	let filePath = (currentPath+urlPath).replace(/\/+$/,'');
+	console.log(filePath);
+	fs.lstat(filePath,function(err,stat){
+		if(err){
+			response.writeHead(200);
+        	response.end(JSON.stringify({code :500,message:err}));
+		}else{
+			if(stat.isFile()){
+				fs.readFile(filePath,function readData(err, data) {
+					let contentType = mime.contentType(filePath.substr(filePath.lastIndexOf('/')+1)) ||  defaultContentType;
+			        response.writeHead(200, {'Content-Type': contentType });
+			        response.end(data);
+			    });
+			}else{
+				fs.readdir(filePath,{encoding:'utf8'},function readData(err,files){
+					if(err){
+						response.writeHead(200);
+        				response.end(JSON.stringify({code : 500,message:err}));
+					}else{
+						response.writeHead(200, {'Content-Type': 'text/html;charset=utf-8'});
+						let filesHtml = '';
+						files.forEach(function(item){
+							filesHtml = filesHtml + `<a href="${urlPath}/${item}" style="display:block;margin:10px;">${item}</a>`;
+						})
+						response.end(filesHtml);
+					}
+			    });
+			}
+		}
+		
+	}) 
+}).listen(port, "127.0.0.1");
+  
+console.log(`Server running on port  ${port} .`)
