@@ -4,7 +4,6 @@
 
 English: start a static server by nodeJs
 
----
 
 # 安装(install)
 
