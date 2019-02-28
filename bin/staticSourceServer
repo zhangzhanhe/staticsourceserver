@@ -4,14 +4,27 @@ const fs = require('fs');
 const child_process = require('child_process');
 const path = require("path");
 const mime = require('mime-types');
-const port = process.argv[2] || 8080;
+var program = require('commander');
+
+//获取参数
+program
+	.option('-t, --type [value]', 'service Type')
+	.option('-p, --port [value]', 'service Port')
+	.parse(process.argv);
+
+const port = program.port || 8080;
+const type = program.type || 'static';
 let currentPath = path.resolve('./');
 let defaultContentType = 'text/plain;charset=utf-8'; //默认的Content-Type
 http.createServer(function (request, response){
 	//判断,若是url为目录,则列出目录下的文件,若是为文件,则直接读取文件内容展示
-	let urlPath = decodeURIComponent(request.url).split("?")[0].replace(/\/+$/,'') || '';
+	let urlPath;
+	if(type == 'vue' && !/^\/static\//.test(request.url)){
+		urlPath = '/index.html';
+	}else{
+		urlPath = decodeURIComponent(request.url).split("?")[0].replace(/\/+$/,'') || '';
+	}
 	let filePath = (currentPath+urlPath).replace(/\/+$/,'');
-	console.log(filePath);
 	fs.lstat(filePath,function(err,stat){
 		if(err){
 			response.writeHead(200);
@@ -40,7 +53,7 @@ http.createServer(function (request, response){
 			}
 		}
 		
-	}) 
+	})
 }).listen(port, "127.0.0.1");
   
 console.log(`Server running on port  ${port} .`)

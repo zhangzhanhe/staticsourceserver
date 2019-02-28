@@ -1,10 +1,10 @@
 {
     "name": "staticsourceserver",
-    "version": "1.0.6",
+    "version": "1.1.1",
     "description": "start a static source serve in set port",
     "main": "index.js",
     "scripts": {
-        "start": "node index.js"
+        "start": "node ./bin/staticSourceServer"
     },
     "bin": {
         "n-start-server": "./bin/staticSourceServer"
@@ -12,6 +12,7 @@
     "author": "duanzhihe",
     "license": "ISC",
     "dependencies": {
+        "commander": "^2.19.0",
         "mime-types": "^2.1.18"
     }
 }

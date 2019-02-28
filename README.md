@@ -15,5 +15,6 @@ npm i -g staticsourceserver
 
 ```
 n-start-server   //默认8080端口(port default 8080)
-n-start-server 9090 //指定9090端口(set port 9090)
+n-start-server -p 9090 //指定9090端口(set port 9090)
+n-start-server -t vue  //指定为VUE单页的history模式支持
 ```
